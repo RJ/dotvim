@@ -21,6 +21,7 @@ set showcmd
 set hidden
 set wildmenu
 set wildmode=list:longest
+set wildignore+=*.beam,*.dump,*~,*.o,.git,*.png,*.jpg,*.gif
 set visualbell
 set cursorline
 set ttyfast
@@ -142,6 +143,9 @@ map <F5> :!/usr/local/bin/ctags -R --c++-kinds=+p --fields=+iaS --extra=+q --exc
 " Ack
 map <leader>a :Ack 
 
+" Command-T plugin
+map <leader>t :CommandT<cr>
+
 " Yankring
 nnoremap <silent> <F3> :YRShow<cr>
 nnoremap <silent> <leader>y :YRShow<cr>
@@ -152,20 +156,20 @@ map <leader>q gqip
 nmap <leader>m :make<cr>
 
 " Google's JSLint
-nmap <silent> <leader>ff :QFix<cr>
-nmap <leader>fn :cn<cr>
-nmap <leader>fp :cp<cr>
-
-command -bang -nargs=? QFix call QFixToggle(<bang>0)
-function! QFixToggle(forced)
-  if exists("g:qfix_win") && a:forced == 0
-    cclose
-    unlet g:qfix_win
-  else
-    copen 10
-    let g:qfix_win = bufnr("$")
-  endif
-endfunction
+"nmap <silent> <leader>ff :QFix<cr>
+"nmap <leader>fn :cn<cr>
+"nmap <leader>fp :cp<cr>
+"
+"command -bang -nargs=? QFix call QFixToggle(<bang>0)
+"function! QFixToggle(forced)
+"  if exists("g:qfix_win") && a:forced == 0
+"    cclose
+"    unlet g:qfix_win
+"  else
+"    copen 10
+"    let g:qfix_win = bufnr("$")
+"  endif
+"endfunction
 
 
 " TODO: Put this in filetype-specific files
@@ -234,8 +238,8 @@ if has('gui_running')
     set go-=R
 
     if has("gui_macvim")
-        macmenu &File.New\ Tab key=<nop>
-        map <leader>t <Plug>PeepOpen
+        "macmenu &File.New\ Tab key=<nop>
+        "map <leader>t <Plug>PeepOpen
     end
 
     let g:sparkupExecuteMapping = '<D-e>'
