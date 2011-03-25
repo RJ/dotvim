@@ -1,3 +1,7 @@
+" NB: helpful commands when hacking this .vimrc:
+" ,ev  <-- open .vimrc
+" ,rv  <-- reload .vimrc
+"
 filetype off
 call pathogen#runtime_append_all_bundles()
 call pathogen#helptags()
@@ -48,6 +52,7 @@ set incsearch
 set showmatch
 set hlsearch
 set gdefault
+" ,<space> clears search result highlights etc
 map <leader><space> :let @/=''<cr>
 runtime macros/matchit.vim
 nmap <tab> %
@@ -72,15 +77,27 @@ colorscheme delek
 map <F2> :NERDTreeToggle<cr>
 let NERDTreeIgnore=['.*\.beam$', '.*\.dump$', '.*~$', '\..*$']
 
-" Use the damn hjkl keys
+" Nazi-mode
 "nnoremap <up> <nop>
 "nnoremap <down> <nop>
 "nnoremap <left> <nop>
 "nnoremap <right> <nop>
 
-" And make them fucking work, too.
-nnoremap j gj
-nnoremap k gk
+" Alt+up/down will go down a 'line', even within one large, wrapped line
+map  <A-j> gj 
+map  <A-k> gk 
+imap <A-j> <ESC>gji
+imap <A-k> <ESC>gki
+map  <A-down> gj 
+map  <A-up> gk 
+imap <A-down> <ESC>gji
+imap <A-up> <ESC>gki
+
+" Scroll-lock-to-centre toggle
+map <leader>zz :let &scrolloff=999-&scrolloff<cr>
+
+" Allow minimised splits to use less space
+set wmh=0
 
 " Easy buffer navigation
 map <C-h> <C-w>h
@@ -89,39 +106,71 @@ map <C-k> <C-w>k
 map <C-l> <C-w>l
 map <leader>w <C-w>v<C-w>l
 
-" Folding
+" tripple escape closes buffer
+map <esc><esc><esc> :q<cr>
+imap <esc><esc><esc> :q<cr>
+
+
+" Max/unmax splits
+nnoremap <c -W>O :call MaximizeToggle ()<cr>
+nnoremap <c -W>o :call MaximizeToggle ()<cr>
+nnoremap <c -W><c-O> :call MaximizeToggle ()<cr>
+
+function! MaximizeToggle()
+  if exists("s:maximize_session")
+    exec "source " . s:maximize_session
+    call delete(s:maximize_session)
+    unlet s:maximize_session
+    let &hidden=s:maximize_hidden_save
+    unlet s:maximize_hidden_save
+  else
+    let s:maximize_hidden_save = &hidden
+    let s:maximize_session = tempname()
+    set hidden
+    exec "mksession! " . s:maximize_session
+    only
+  endif
+endfunction
+
+" Folding TODO: configure for erlang
 set foldlevelstart=0
 nnoremap <Space> za
 vnoremap <Space> za
 au BufNewFile,BufRead *.html map <leader>ft Vatzf
 
-"function! MyFoldText()
-"    let line = getline(v:foldstart)
+function! MyFoldText()
+    let line = getline(v:foldstart)
 
-"    let nucolwidth = &fdc + &number * &numberwidth
-"    let windowwidth = winwidth(0) - nucolwidth - 3
-"    let foldedlinecount = v:foldend - v:foldstart
+    let nucolwidth = &fdc + &number * &numberwidth
+    let windowwidth = winwidth(0) - nucolwidth - 3
+    let foldedlinecount = v:foldend - v:foldstart
 
-"    " expand tabs into spaces
-"    let onetab = strpart('          ', 0, &tabstop)
-"    let line = substitute(line, '\t', onetab, 'g')
+    " expand tabs into spaces
+    let onetab = strpart('          ', 0, &tabstop)
+    let line = substitute(line, '\t', onetab, 'g')
 
-"    let line = strpart(line, 0, windowwidth - 2 -len(foldedlinecount))
-"    let fillcharcount = windowwidth - len(line) - len(foldedlinecount) - 4
-"    return line . '‚Ä¶' . repeat(" ",fillcharcount) . foldedlinecount . '‚Ä¶' . ' '
-"endfunction
-"set foldtext=MyFoldText()
+    let line = strpart(line, 0, windowwidth - 2 -len(foldedlinecount))
+    let fillcharcount = windowwidth - len(line) - len(foldedlinecount) - 4
+    return line . '‚Ä¶' . repeat(" ",fillcharcount) . foldedlinecount . '‚Ä¶' . ' '
+endfunction
+set foldtext=MyFoldText()
 
 " Fuck you, help key.
 inoremap <F1> <ESC>:set invfullscreen<CR>a
 nnoremap <F1> :set invfullscreen<CR>
 vnoremap <F1> :set invfullscreen<CR>
 
+
 " Various syntax stuff
 au BufNewFile,BufRead *.escript set filetype=erlang
 au BufNewFile,BufRead *.app.src set filetype=erlang
 au BufNewFile,BufRead *.app     set filetype=erlang
 au BufNewFile,BufRead *.appup   set filetype=erlang
+au BufNewFile,BufRead *.erl     set filetype=erlang
+
+""au FileType {erl,erlang} au BufWritePost <buffer> silent ! [ -e tags ] &&
+""    \ ( awk -F'\t' '$2\!="%:gs/'/'\''/"{print}' tags ; ctags --languages=erlang -f- '%:gs/'/'\''/' )
+""    \ | sort -t$'\t' -k1,1 -o tags.new "&& mv tags.new tags
 
 au BufNewFile,BufRead *.m*down set filetype=markdown
 au BufNewFile,BufRead *.m*down nnoremap <leader>1 yypVr=
@@ -134,13 +183,13 @@ map <leader>S ?{<CR>jV/^\s*\}?$<CR>k:sort<CR>:let @/=''<CR>
 " Clean whitespace
 map <leader>W :%s/\s\+$//<cr>:let @/=''<CR>
 
-" Exuberant ctags!
+" Exuberant ctags! TODO reconfigure
 let Tlist_Ctags_Cmd = "/usr/local/bin/ctags"
 let Tlist_WinWidth = 50
 map <F4> :TlistToggle<cr>
 map <F5> :!/usr/local/bin/ctags -R --c++-kinds=+p --fields=+iaS --extra=+q --exclude='@.ctagsignore' .<cr>
 
-" Ack
+" Ack 
 map <leader>a :Ack 
 
 " Command-T plugin
@@ -185,35 +234,17 @@ map <leader>v V`]
 " HTML tag closing
 inoremap <C-_> <Space><BS><Esc>:call InsertCloseTag()<cr>a
 
-" Faster Esc
+" Faster Esc (hit jj in insert mode)
 "inoremap <Esc> <nop>
-"inoremap jj <ESC>
-
-" Scratch
-nmap <leader><tab> :Sscratch<cr><C-W>x<C-j>:resize 15<cr>
-
-" Diff
-" nmap <leader>d :!hg diff %<cr>
-
-" Rainbows!
-nmap <leader>R :RainbowParenthesesToggle<CR>
+inoremap jj <ESC>
 
 " Edit .vimrc
-"nmap <leader>ev <C-w><C-v><C-l>:e $MYVIMRC<cr>
 nmap <leader>ev :e $MYVIMRC<cr>
 " Reload .vimrc
 nmap <leader>rv :source $MYVIMRC<cr>
-":filetype detect<cr>
 
 " Sudo to write
 cmap w!! w !sudo tee % >/dev/null
-
-" Easy filetype switching
-nnoremap _dt :set ft=htmldjango<CR>
-nnoremap _jt :set ft=htmljinja<CR>
-
-" VCS Stuff
-let VCSCommandMapPrefix = "<leader>h"
 
 " Disable useless HTML5 junk
 let g:event_handler_attributes_complete = 0
@@ -231,7 +262,7 @@ nnoremap ; :
 inoremap # X<BS>#
 
 if has('gui_running')
-    set guifont=Menlo:h12
+    set guifont=Menlo:h14
     colorscheme molokai
     set background=dark
 
