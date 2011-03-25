@@ -199,7 +199,11 @@ nmap <leader><tab> :Sscratch<cr><C-W>x<C-j>:resize 15<cr>
 nmap <leader>R :RainbowParenthesesToggle<CR>
 
 " Edit .vimrc
-nmap <leader>ev <C-w><C-v><C-l>:e $MYVIMRC<cr>
+"nmap <leader>ev <C-w><C-v><C-l>:e $MYVIMRC<cr>
+nmap <leader>ev :e $MYVIMRC<cr>
+" Reload .vimrc
+nmap <leader>rv :source $MYVIMRC<cr>
+":filetype detect<cr>
 
 " Sudo to write
 cmap w!! w !sudo tee % >/dev/null
