@@ -6,7 +6,7 @@
 	url = git://git.wincent.com/command-t.git
 [submodule "bundle/vimerl"]
 	path = bundle/vimerl
-	url = https://github.com/oscarh/vimerl.git
+    url = https://github.com/jimenezrick/vimerl.git
 [submodule "bundle/supertab"]
 	path = bundle/supertab
 	url = https://github.com/ervandew/supertab.git
@@ -19,3 +19,9 @@
 [submodule "bundle/git"]
 	path = bundle/git
 	url = https://github.com/motemen/git-vim.git
+[submodule "bundle/erlang-skel"]
+	path = bundle/erlang-skel
+	url = https://github.com/vim-scripts/vim-erlang-skeleteons.git
+[submodule "bundle/tabbar"]
+	path = bundle/tabbar
+	url = https://github.com/vim-scripts/TabBar.git

@@ -10,6 +10,9 @@ filetype plugin indent on
 set nocompatible
 set modelines=0
 
+" Full screen on macvim should fully maxed out
+set fuopt=maxvert,maxhorz
+
 " Tabs/spaces
 set tabstop=4
 set shiftwidth=4
@@ -75,7 +78,7 @@ colorscheme delek
 
 " NERD Tree
 map <F2> :NERDTreeToggle<cr>
-let NERDTreeIgnore=['.*\.beam$', '.*\.dump$', '.*~$', '\..*$']
+let NERDTreeIgnore=['\.beam$', '\.dump$', '\~$', '^\.']
 
 " Nazi-mode
 "nnoremap <up> <nop>
@@ -93,6 +96,7 @@ map  <A-up> gk
 imap <A-down> <ESC>gji
 imap <A-up> <ESC>gki
 
+
 " Scroll-lock-to-centre toggle
 map <leader>zz :let &scrolloff=999-&scrolloff<cr>
 
@@ -107,9 +111,11 @@ map <C-l> <C-w>l
 map <leader>w <C-w>v<C-w>l
 
 " tripple escape closes buffer
-map <esc><esc><esc> :q<cr>
-imap <esc><esc><esc> :q<cr>
+map <esc><esc><esc> :bd<cr>
+imap <esc><esc><esc> :bd<cr>
 
+" toggle comments
+map <leader>c V:!perl -nle 'if (/^\%\% /) { s/^\%\% (.*)/$1/g; print } else {print "\%\% ".$_}'<cr>
 
 " Max/unmax splits
 nnoremap <c -W>O :call MaximizeToggle ()<cr>
@@ -132,8 +138,19 @@ function! MaximizeToggle()
   endif
 endfunction
 
+let g:erl_author="RJ"
+let g:erl_company="IRCCloud Ltd."
+let g:erl_replace_buffer=1
+let g:erl_tpl_dir="/Users/rj/.vim/bundle/erlang-skel/plugin/templates/"
+
+let g:erlangCompleteFile="~/.vim/bundle/vimerl/autoload/erlang_complete.erl"
+let g:erlangCheckFile="~/.vim/bundle/vimerl/compiler/erlang_check.erl"
+let g:erlangManPath="/usr/local/Cellar/erlang/R14B02/share/man/"
+
+
+
 " Folding TODO: configure for erlang
-set foldlevelstart=0
+set foldlevelstart=1
 nnoremap <Space> za
 vnoremap <Space> za
 au BufNewFile,BufRead *.html map <leader>ft Vatzf
@@ -194,6 +211,10 @@ map <leader>a :Ack
 
 " Command-T plugin
 map <leader>t :CommandT<cr>
+let CommandTMaxHeight=0
+"set CommandTMatchWindowAtTop=1
+"set CommandTAcceptSelectionSplitMap='s'
+"set CommandTAcceptSelectionVSplitMap='v'
 
 " Yankring
 nnoremap <silent> <F3> :YRShow<cr>
