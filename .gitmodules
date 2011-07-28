@@ -22,6 +22,6 @@
 [submodule "bundle/erlang-skel"]
 	path = bundle/erlang-skel
 	url = https://github.com/vim-scripts/vim-erlang-skeleteons.git
-[submodule "bundle/tabbar"]
-	path = bundle/tabbar
-	url = https://github.com/vim-scripts/TabBar.git
+[submodule "bundle/tagbar"]
+	path = bundle/tagbar
+    url = https://github.com/majutsushi/tagbar.git
